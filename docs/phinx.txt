@@ -1,0 +1,60 @@
+http://docs.phinx.org/en/latest/index.html
+
+Para crear el fichero de configuración de phinx:
+- Desde el raiz de proyectos en consola ejecutar el comando:
+  .\vendor\bin\phinx init --format php
+  (Para trabajar con el parser php, ver doc) Se creará el fichero connfiguración 'phinx.php'
+
+** USAR EL MODIFICADOR '-e' PARA ESPECIFICAR EL ENVIRONMENT DONDE SE DESEA EJECUTAR --> LO BUSCARA EN EL FICHERO 'database.php'
+
+COMANDOS:
+
+- vendor/bin/phinx status -e develop --> para ver el estado de las migraciones ejecutadas
+
+
+
+MIGRATE:
+
+Para la creación de tablas, recordar que PHINX añadirá el campo ID autonumerico y como clave primaria a cada tabla así como 2 campos de tiempo
+que son el 'created_at' y el 'updated_at'. Estos 3 campos los creará siempre.
+
+HAY 2 FORMAS DE TRABAJAR:
+1. Usar el metodo change() que es reversible equivale al up() y down(), y se ejecutará de una forma u otra en función de si la migración ha sido
+ejecutada o no.
+2. Usar los métodos tradicionales up() --> creación y down() --> rollback
+
+- crear migración: vendor/bin/phinx create CreateUsers
+  Automaticamente se creara en el directorio migrations especificado, un fichero del tipo 'Numero_create_users'; la separación se hace automaticamente y la clase 
+  que hay que crear en ese fichero los metodos 'up() y down()' o bien trabajar con el metodo 'change()' exclusivamente.
+
+- deshacer todo --> rollbacks --> vendor/bin/phinx rollback -t 0   'revertirá todas las migraciones'
+  El modificador '-t' target especificará la numeración de la migración que deseamos deshacer.
+
+- volver a la migración anterior: vendor/bin/phinx rollback
+
+- volver a una migración especifica deshaciendo lo que esté por encima: vendor/bin/phinx rollback -t 20181222100626
+
+- volver a una migración de una fecha específica: vendor/bin/phinx rollback -d 20181222
+  Se puede especificar Horas, Minutos y Segundos para ser más específicos.
+
+- Mostrar por pantalla las consultas sin ejecutarlas --> vendor/bin/phinx rollback --dry-run
+
+Con el comando MIGRATE ejecutamos los ficheros de migraciones, de la siguiente forma:
+
+1. Ejecutar todos los ficheros de migraciones de un entorno:
+   -- vendor/bin/phinx migrate -e development
+2. Para realizar la migración de un fichero concreto usar el modificar '-t' de 'target':
+   -- vendor/bin/phinx migrate -e development -t 20110103081132
+
+
+
+SEEDERS:
+
+- crear un seeder: vendor/bin/phinx seed:create UsersSeeder
+
+- ejecutar un seeder: vendor/bin/phinx seed:run -s UsersSeeder
+  Con el modificador '-s' ejecutamos la clase seeder correspondiente usar tantos modificadores como ficheros queramos ejecutar
+
+- ejecutar todos los seeders: vendor/bin/phinx seed:run
+
+Los datos para insertar en las tablas correspondientes se especificaran en formato array.

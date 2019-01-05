@@ -1,0 +1,56 @@
+{% extends 'templates/app.twig' %}
+
+{% set reports = 'active' %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="col-xs-12">
+            {% if disponibles %}
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">DESCARGAS</h3>
+                        </div>
+                        <div class="box-body table-responsive no-padding">
+                            <table id="descargasReports" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Report</th>
+                                        <th>Descripción</th>
+                                        <th>Formato</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {% for informe in disponibles %}
+                                            <tr>
+                                                <td>{{ informe.nombre }}</td>
+                                                <td>{{ informe.descripcion }}</td>
+                                                <td>
+                                                    <a href="{{ base_url() }}/{{ informe.ruta }}{{ informe.formato }}">
+                                                        {% if informe.formato == 'excel' %}
+                                                            <i class="fas fa-file-excel downExcel" title="{{informe.formato}}"></i>
+                                                        {% else %}
+                                                            <i class="fas fa-file downFile" title="{{informe.formato}}"></i>
+                                                        {% endif %}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                
+        
+            {% else %}
+                <div class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <p class="infoAlert"><i class="fas fa-info-circle"></i> No tiene asignado ningún report para su descarga. Contacte con soporte.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+
+
+{% endblock %}

@@ -1,0 +1,23 @@
+#Configurar variable entorno para identificar desde que entorno se ejecuta el servidor web
+#Server_Addr -- dirección IP del servidor en el que se recibió la solicitud (solo con versiones posteriores a la 2.0.43 apache)
+# "::1" -- localhost
+SetEnvIf Server_Addr "::1" ENVIRONMENT=development
+#SetEnvIf Server_Addr "ip_server_production" ENVIRONMENT=production
+
+#Remove the footer from error pages, which details the version numbers:
+ServerSignature Off
+
+# Hide X-Powered-By and Server headers, sent by downstream application servers:
+# Note you need both below as the "always" one doesn't work with Jboss for some reason
+Header always unset "X-Powered-By"
+Header unset "X-Powered-By"
+
+#Minimizar la informacion mostrada en la cabecera 'Server'
+#Modificar httpd.conf en la configuración del servidor apache --> ServerTokens Prod
+
+
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

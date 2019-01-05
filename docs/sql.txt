@@ -1,0 +1,37 @@
+
+-- Comandos para trabajar con SQL, indistintamente sea MySQL o MariaDB
+
+1. Abrir consola e iniciar la linea de comandos mysql
+
+2. Crear la base de datos
+   CREATE DATABASE `xxxxxxx`;
+
+3. Crear usuario y su password
+   CREATE USER 'zzzzzz' IDENTIFIED BY 'yyyyyyy';
+
+4. Crear cuenta sin privilegios, permitiendo acceso solo desde local host, para desarrollo
+   GRANT USAGE ON *.* TO 'zzzzzz'@'localhost' IDENTIFIED BY 'yyyyyyy';
+
+5. Asignar privilegios a la cuenta de usuario para la base de datos especificada
+   GRANT ALL privileges ON `xxxxxxx`.* TO 'zzzzzz'@'localhost';   || OJO CON LAS COMILLAS FRANCESAS PARA EL NOMBRE BASE DATOS
+
+6. Aplicar los cambios
+   FLUSH PRIVILEGES;
+
+7. Verificar que el nuevo usuario tiene los permisos adecuados
+   SHOW GRANTS FOR 'myuser'@localhost;
+
+   +--------------------------------------------------------------+ 
+   | Grants for myuser@localhost                                  | 
+   +--------------------------------------------------------------+ 
+   | GRANT USAGE ON *.* TO 'zzzzzz'@'localhost'                   | 
+   | GRANT ALL PRIVILEGES ON `xxxxxxx`.* TO 'zzzzzz'@'localhost'     | 
+   +--------------------------------------------------------------+ 
+   2 rows in set (0,00 sec)
+
+8. Para eliminar los cambios realizados anteriormente
+   DROP USER zzzzzz@localhost;
+   DROP DATABASE mydb;
+
+   
+   

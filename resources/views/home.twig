@@ -1,0 +1,123 @@
+{% extends 'templates/app.twig' %}
+
+{% set home = 'active' %}
+
+{% block content %}
+    <section class="bar background-white">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="box-simple">
+                        <div class="icon-outlined"><i class="fa fa-desktop"></i></div>
+                        <h3 class="h4">Front-End</h3>
+                        <p>Interfaz para acceder a informes, descargables en formato EXCEL.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="box-simple">
+                        <div class="icon-outlined"><i class="fas fa-server"></i></div>
+                        <h3 class="h4">Back-End</h3>
+                        <p>Motor para la obtención de los datos desde distintas fuentes, y preparación del formato del informe para que pueda ser descargado.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="box-simple">
+                        <div class="icon-outlined"><i class="fas fa-database"></i></div>
+                        <h3 class="h4">PERSISTENCIA DATOS</h3>
+                        <p>Los datos origen se encuentran en distintas Base de Datos y su manipulación y estudio se realizará a través de ficheros EXCEL.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="get-it">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 text-center p-3">
+                    <h3>Proyecto realizado con SLIM PHP</h3>
+                    <p>Descarga el código para su evaluación y prueba</p>
+                </div>
+                <div class="col-lg-4 text-center p-3">
+                    <a href="javascript:void(0)" class="btn btn-template-outlined-white">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="bg-white bar">
+        <div class="container">
+          <div class="heading text-center">
+            <h2>Aportando Ideas</h2>
+          </div>
+          <p class="lead">Durante mi trayectoria profesional, me he encontrado con muy diversas problemáticas y distintas formas de solucionarlas. Por ejemplo cuando se disponde de efectivo
+          para invertir, se compra el software o se subcontrata su desarrollo, hasta el otro extremo cuando no se dispone de ese efectivo, que es desarrollarlo nosotros mismos.</p>
+          <p class="lead">La idea que presento en este mini-proyecto, y digo 'mini' porque es la presentación de una idea, consiste básicamente en solucionar la problemática
+          que hay entre los distintos departamentos cuando necesitan 'datos' de otros departamentos. A este respecto y como ya he citado anteriormente no todas las empresas se pueden costear
+          un sistema de gestión integral 'ERP', por lo que con esta aportación se pretende en la medida de lo posible, evitar los casos:</p>
+          <ul class="lead">
+            <li>Envío de emails a los equipos de desarrollo solicitando informes, y que normalmente tienen el carácter de urgente.</li>
+            <li>Otras empresas disponen de sistemas de tickets para gestionar las tareas, y desde donde se solicita la preparación de informes y correspondiente envío ... que tambíen suelen ser de carácter urgente.</li>
+            <li>El equipo de desarrollo del proyecto 'X' realiza una implementación para getionar las peticiones anteriores; pero por necesidades de negocio el equipo de desarrollo del 
+            proyecto 'Y' implementa otra versión ... si, si, aunque os parezca raro, esto es más habitual de lo que pensáis, y redunda en duplicidad de trabajo, mantenimientos, etc ...</li>
+          </ul>
+          <p class="lead">Pues como alternativa os presento esta idea, externalizar y centralizar la funcionalidad de creación de informes en una única aplicación. De esta forma se pueden obtener los datos en formato fichero,
+          desde un acceso web o bien implementado un cliente que consuma la API RESTFul a tal efecto.</p>
+        </div>
+    </section>
+
+    <div class="get-it">
+        <div class="container">
+            <div class="row">
+                <div id="tip" class="col-xs-12 text-center">
+                    <h3>Siéntase libre de enviarme sus comentarios, me servirán como referente de mejora.</h3>
+                    <p>
+                        <a href="mailto:jpozo@desarrollandocodigo.com">jpozo@desarrollandocodigo.com</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="bg-white bar end">
+          <div class="container">
+            <div class="col-lg-4">
+              <div class="home-blog-post">
+                <div class="image">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="text">
+                  <h4><span>Estaba pensando ... </span></h4>
+                  <p class="intro">Por qué copiar y reutilizar código que tiene la misma finalidad ... y luego mantenerlo, con la coletilla que todos conocemos ... es que está repetido en un montón de ficheros!</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="home-blog-post">
+                <div class="image">
+                    <i class="fas fa-satellite-dish"></i>
+                </div>
+                <div class="text">
+                  <h4><span>Desde qué dispositivo ...</span></h4>
+                  <p class="intro">Esto es lo bueno de RESTFul, si tienes internet y un navegador ... Reporting!!</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="home-blog-post">
+                <div class="image">
+                    <i class="fas fa-glass-cheers"></i>
+                </div>
+                <div class="text">
+                  <h4><span>Y por fin ... la idea</span></h4>
+                  <p class="intro">Descentralizar la gestión de reporting del propio sistema, para hacerlo independiente y único. Lo que permite, modularización, 
+                  escalabilidad y mantenimiento óptimo.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+
+{% endblock %}
