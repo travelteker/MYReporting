@@ -39,7 +39,7 @@ $container['auth'] = function($c){
 
 //Para utilizar motor de plantillas TWIG
 $container['view'] = function($c){
-    $pathViews = __DIR__ . '/../resources/views';
+    $pathViews = __DIR__ . '/../views';
     $view = new \Slim\Views\Twig($pathViews, [
         'cache' => false
     ]);
