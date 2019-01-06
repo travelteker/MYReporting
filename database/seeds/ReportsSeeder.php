@@ -14,13 +14,13 @@ class ReportsSeeder extends AbstractSeed
             [
                 'nombre'    => 'Productos inventariados',
                 'descripcion' => 'Detalle de productos registrados según último inventario realizado',
-                'ruta' => 'reports/inventario_productos/',
+                'ruta' => 'reports/v1/inventario_productos/',
                 'formato' => 'excel'
             ],
             [
                 'nombre'    => 'Venta de productos',
                 'descripcion' => 'Detalle de productos registrados según último inventario realizado',
-                'ruta' => 'reports/venta_productos/',
+                'ruta' => 'reports/v1/venta_productos/',
                 'formato' => 'excel'
             ],
         ];

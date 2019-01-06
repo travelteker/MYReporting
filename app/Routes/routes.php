@@ -71,8 +71,11 @@ $app->group('/reports', function() use ($container){
 
     //Una vez logueado el usuario podrá acceder a una lista de enlaces para descargar reports
     $this->get('/index','ReportsController:index')->setName('reports'); 
- 
-    $this->get('/{metodo}/{formato}','ReportsController:prepareFile')->setName('reports')->add(new ReportingMiddleware($container));
+    
+    $this->group('/v1', function() use ($container){
+        $this->get('/{metodo}/{formato}','ReportsController:prepareFile')->setName('reports')->add(new ReportingMiddleware($container));
+    });
+    
 
 })->add(new AuthMiddleware($container));
 

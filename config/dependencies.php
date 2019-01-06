@@ -10,9 +10,20 @@ $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
 
-$container['db'] = function ($c) use ($capsule){
+$container['db'] = function ($c) use ($capsule) {
     return $capsule;
 };
+
+
+$container['spreadsheet'] = function ($c) {
+    return new PhpOffice\PhpSpreadsheet\Spreadsheet;
+};
+
+$container['writerXlsx'] = function ($c) {
+    return new PhpOffice\PhpSpreadsheet\Writer\Xlsx($c->spreadsheet);
+};
+
+
 
 
 

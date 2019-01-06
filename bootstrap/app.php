@@ -3,13 +3,13 @@
 session_start();
 
 //Obtenemos la parametrizacion de la configuración
-$settings = require __DIR__ . '/../src/settings.php';
+$settings = require __DIR__ . '/../config/settings.php';
 
 //Instanciamos objeto slim
 $app = new \Slim\App($settings);
 
 // Añadir las dependencias a través de DI -> CONTENEDOR DEPENDENCIAS
-require __DIR__ . '/../src/dependencies.php';
+require __DIR__ . '/../config/dependencies.php';
 
 
 //------------------------------ MIDDLEWARES ------------------------------

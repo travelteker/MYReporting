@@ -2,9 +2,12 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+//Cargar constantes del sistema
+require_once __DIR__ . '/../config/constantes.php';
+
 
 //Cargar parametros de entorno usando DOTENV
-require_once __DIR__ . '/../src/environments/entornos.php';
+require_once __DIR__ . '/../config/environments/entornos.php';
 
 
 
