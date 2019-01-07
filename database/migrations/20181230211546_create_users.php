@@ -14,8 +14,8 @@ class CreateUsers extends AbstractMigration
             'users', 
             ['id' => 'id_user']       //Sobreescribimos el nombre de la clave primaria 'id' por defecto, por el nuevo nombre 'id_user'; se mantiene el AUTO_INCREMENT
         );
+        
         //Añadir columnas a la tabla que queremos crear
-
         $tabla->addColumn('name', 'string')                      //string -> varchar(255) default
               ->addColumn('email', 'string', ['limit' => 60])
               ->addColumn('password' ,'string',['limit' => 255])  //guardaremos un hash de 60 caracteres

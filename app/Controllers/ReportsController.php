@@ -102,12 +102,93 @@ class ReportsController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         // Personalizar el nombre de la hoja activa
         $sheet->setTitle(__FUNCTION__);
-        //Añadir valores a las celdas
-        $sheet->setCellValue('A1', 'Hello World !');
-        $sheet->setCellValue('A2', 'Goodbye World !');
+
+        //Estilo cabecera
+        $spreadsheet->getActiveSheet()->getStyle('A4:C4')->applyFromArray($this->styleHeader());
+
+        //Cabecera Report
+        $cabecera = [
+            'A' => 'Producto', 
+            'B' => 'Total', 
+            'C' => 'Area'
+        ];
+
+        $startRow = 4;
+        $starCol = 'A';
+
+        //Queremos 3 columnas sólo
+        for($i = 'A'; $i < 'D'; $i++)
+        {
+            $sheet->setCellValue($i.$startRow, $cabecera[$i]);
+            //Auto-size column
+            $sheet->getColumnDimension($i)->setAutosize(true);
+        }
+
+        //Obtener los datos mediante consulta a la BD
+        $listadoDatos = $this->Inventory->productosInventario();
+
+                                //array datos a insertar, rellenar con valor NULL, coordenada comienzo
+        $sheet->fromArray($this->arrayFilasExcel($listadoDatos), NULL, 'A5');
 
         return $pathExcelFileName;
 
+    }
+
+
+    /**
+     * Preparar las filas a escribir en el Excel en función de la cabecera necesaria.
+     *
+     * @return void
+     */
+    private function arrayFilasExcel($listadoDatos)
+    {
+        $filasExcel = [];
+        foreach($listadoDatos as $cod_inventario => $data)
+        {
+            foreach($data as $area => $arrayArea)
+            {
+                foreach($arrayArea as $info)
+                {
+                    $filasExcel[] = [$info['producto'], $info['total'], $area];
+                }
+            }
+        }
+        return $filasExcel;
+    }
+
+
+    /**
+     * Configuracion estilo para la cabecera del report
+     *
+     * @return void
+     */
+    private function styleHeader()
+    {
+       return [
+            'font' => [
+                'bold' => true,
+                'size' => 15
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                'rotation' => 90,
+                'startColor' => [
+                    'argb' => 'FFA0A0A0',
+                ],
+                'endColor' => [
+                    'argb' => 'FFFFFFFF',
+                ],
+            ],
+        ];
     }
 
 

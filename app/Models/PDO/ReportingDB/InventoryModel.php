@@ -3,7 +3,7 @@
 namespace App\Models\PDO\ReportingDB;
 
 
-class ReportsUserModel
+class InventoryModel
 {
     protected $db;
 
@@ -14,20 +14,6 @@ class ReportsUserModel
     }
 
     
-    public function reportsByUser($iduser)
-    {
-        $sql = "SELECT r.nombre, r.descripcion, r.ruta, r.formato ";
-        $sql .= "FROM reports r ";
-        $sql .= "LEFT JOIN user_report ur ON ur.id_report = r.id_report ";
-        $sql .= "WHERE ur.id_user = $iduser";
-
-        $query = $this->db->prepare($sql);
-        $query->execute();
-        $datos = $query->fetchAll(\PDO::FETCH_ASSOC);
-        
-        return $datos;
-    }
-
 
     public function productosInventario()
     {
@@ -38,7 +24,7 @@ class ReportsUserModel
         $query->execute();
         $resultado = [];
 
-        while($fila = $query->fetch(\PDO::FETCH_ASSCO))
+        while($fila = $query->fetch(\PDO::FETCH_ASSOC))
         {
             $aux = [];
             $aux['producto'] = $fila['name_product'];
@@ -49,7 +35,6 @@ class ReportsUserModel
             
             
         }
-        
         return $resultado;
     }
 

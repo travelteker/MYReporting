@@ -1,5 +1,21 @@
 <?php
 
+
+if(!defined('DIR_PHINX'))
+{
+    define('DIR_PHINX', 'database');
+}
+
+if(!defined('DIR_MIGRATIONS'))
+{
+    define('DIR_MIGRATIONS', 'migrations');
+}
+
+if(!defined('DIR_SEEDS'))
+{
+    define('DIR_SEEDS', 'seeds');
+}
+
 /* INFO: Las credenciales de la BD nos los tiene que facilitar el DevOps correspondiente para el sistema de testing, beta, production, etc ... */
 
 /* ------------------- FUNCIONES AUXILIARES ------------------------ */
@@ -70,8 +86,8 @@ $entorno = searchEnvironment($getHost, $mis_entornos);
 //Configuración parámetros PHINX
 $configPhinx = [
     'paths' => [
-        'migrations' => __DIR__.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'migrations',   //Path para guardar las migraciones
-        'seeds' => __DIR__.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'seeds'              //Path para guardar los seeds
+        'migrations' => __DIR__.DIRECTORY_SEPARATOR . DIR_PHINX . DIRECTORY_SEPARATOR . DIR_MIGRATIONS,   //Path para guardar las migraciones
+        'seeds' => __DIR__.DIRECTORY_SEPARATOR. DIR_PHINX .DIRECTORY_SEPARATOR . DIR_SEEDS                 //Path para guardar los seeds
     ],
     'environments' => [
         'default_migration_table' => 'phinxlog',
@@ -81,7 +97,7 @@ $configPhinx = [
 
 
 //Cargar las variables del entorno solicitado para ejecutar las operaciones PHINX
-$pathEntornoEjecucion = __DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'environments'.DIRECTORY_SEPARATOR.$entorno;
+$pathEntornoEjecucion = __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'environments'.DIRECTORY_SEPARATOR.$entorno;
 $dotenv = new Dotenv\Dotenv($pathEntornoEjecucion);
 //Añadimos nuestra configuración a las variables globales "$_ENV", "$_SERVER"
 $dotenv->load();

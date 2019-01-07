@@ -19,7 +19,7 @@ class ReportsSeeder extends AbstractSeed
             ],
             [
                 'nombre'    => 'Venta de productos',
-                'descripcion' => 'Detalle de productos registrados según último inventario realizado',
+                'descripcion' => 'Detalle ventas de los productos inventariados',
                 'ruta' => 'reports/v1/venta_productos/',
                 'formato' => 'excel'
             ],

@@ -139,6 +139,10 @@ $container['ReportsUser'] = function($c){
     return new \App\Models\PDO\ReportingDB\ReportsUserModel($c->connectPDOReporting);
 };
 
+$container['Inventory'] = function($c){
+    return new \App\Models\PDO\ReportingDB\InventoryModel($c->connectPDOReporting);
+};
+
 
 
 
