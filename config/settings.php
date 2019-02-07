@@ -2,7 +2,7 @@
 
 $settings = [
     'settings' => [
-        'displayErrorDetails' => true, // set to false in production
+        'displayErrorDetails' => getenv('DISPLAYERRORDETAILS'), // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
         // Renderer settings
         'renderer' => [
@@ -11,7 +11,7 @@ $settings = [
         // Monolog settings
         'logger' => [
             'name' => 'slim-app',
-            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
+            'path' => __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
         'db' => [
@@ -23,7 +23,18 @@ $settings = [
             'password' => getenv('PASSWORD'),
             'charset' => getenv('CHARSET'),
             'collation' => getenv('COLLATION'),
-            'prefix' => getenv('PREFIX')
+            'prefix' => getenv('PREFIX'),
+            'options' => null
+        ],
+        'myrtkn' => [
+            'validPath' => getenv('VALIDPATH'),
+            'ignore' => getenv('IGNORE'),
+            'header' => getenv('HEADER'),
+            'attribute' => getenv('ATTRIBUTE'),
+            'secret' => getenv('SECRET'),
+            'algorithm' => getenv('ALGORITHM'),
+            'regexp' => getenv('REGEXP'),
+            'secure' => getenv('SECURE')
         ] 
     ],
     

@@ -361,6 +361,7 @@ section.end p.lead {
 
 .titleSignin, .titleCreacion, .titleChange {
     font-size: 1.8rem;
+    background: #131414 !important;
 }
 
 #signin, #signup, #changePassword {
@@ -368,10 +369,15 @@ section.end p.lead {
     font-weight: bold;
     font-size: 1.5rem;
     border-radius: 3px;
+    background: #4fbfa8 !important;
 }
 
 .crearCuenta {
     margin-top: 90px;
+}
+
+.custom-panel {
+    border-color: #131414;
 }
 
 

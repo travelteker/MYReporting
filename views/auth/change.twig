@@ -4,29 +4,33 @@
     <div class="container">
         <div class="row cambiar">
             <div class="col-md-6 col-md-offset-3">
-                <div class="panel panel-primary">
+                <div class="panel panel-primary custom-panel">
                     <div class="panel-heading titleChange">
-                        Cambiar password
+                        <i class="fas fa-user-lock"></i> Cambiar password
                     </div>
                     <div class="panel-body">
                         <form action="{{ path_for('auth.password.change') }}" method="post" autocomplete="off">
                             <div class="form-group {{ errors.password_old ? 'has-error' : '' }}">
-                                <label for="password_old">Current Password:</label>
-                                <input type="password" name="password_old" id="password_old" class="form-control">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-addon1"><i class="fas fa-unlock"></i> Clave Actual:</span>
+                                    <input type="password" name="password_old" id="password_old" class="form-control">
+                                </div>
                                 {% if errors.password_old %}
                                     <span class="help-block">{{ errors.password_old | first }}</span>
                                 {%  endif %}
                             </div>
                             <div class="form-group {{ errors.password_new ? 'has-error' : '' }}">
-                                <label for="password_new">New Password:</label>
-                                <input type="password" name="password_new" id="password_new" class="form-control">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-addon1"><i class="fas fa-lock"></i> Clave Nueva:</span>
+                                    <input type="password" name="password_new" id="password_new" class="form-control">
+                                </div>
                                 {% if errors.password_new %}
                                     <span class="help-block">{{ errors.password_new | first }}</span>
                                 {%  endif %}
                             </div>
                             <button id="changePassword" type="submit" class="btn btn-success btn-block">Modificar</button>
-
-                            {{ csrf.field | raw }}
+              
+                            {{ csrf_field() | raw }}
 
                         </form>
                     </div>

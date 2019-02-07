@@ -35,7 +35,7 @@ $app->group('', function(){
     $this->get('/auth/signin', 'AuthController:getSignIn')->setName('auth.signin');
     $this->post('/auth/signin', 'AuthController:postSignIn');
 
-})->add(new GuestMiddleware($container));
+})->add(new GuestMiddleware($container))->add($container->get('csrf'));
 //$container -- está declarado en el fichero src/dependencies.php y se carga antes que el fichero Routes/routes.php 
 
 
@@ -61,7 +61,7 @@ $app->group('', function(){
     $this->get('/auth/password/change', 'PasswordController:getChangePassword')->setName('auth.password.change');
     $this->post('/auth/password/change', 'PasswordController:postChangePassword');
 
-})->add(new AuthMiddleware($container));
+})->add(new AuthMiddleware($container))->add($container->get('csrf'));
 //Middleware para proteger rutas que necesitan que el usuario esté logueado previamente antes de acceder
 
 
@@ -80,3 +80,7 @@ $app->group('/reports', function() use ($container){
 })->add(new AuthMiddleware($container));
 
 
+// ------------------------------------------ RUTAS DISPONIBLES API ------------------------------------------------------ //
+// ----------------------------------------------------------------------------------------------------------------------- //
+
+require_once ('routes_api.php');

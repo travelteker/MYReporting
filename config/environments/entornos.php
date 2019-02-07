@@ -2,7 +2,17 @@
 
 //Identificar entorno desde donde se hace la request
 $environment = null;
-if(isset($_SERVER['ENVIRONMENT']))
+//Obtener todas las cabeceras de la petición
+$cabeceras = apache_request_headers();
+if(isset($cabeceras['Myrtkn'])) 
+{
+    //Para usar nuestra API todas las peticiones tienen que llevar por convención una cabecera del tipo 'Myrtkn' 
+    //y con valor un string aleatorio
+    $token = $cabeceras['Myrtkn'];
+    $environment = 'api';
+}
+
+if(!isset($environment) AND isset($_SERVER['ENVIRONMENT']))
 {
     $environment = $_SERVER['ENVIRONMENT'];
 }

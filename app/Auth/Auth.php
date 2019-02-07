@@ -41,6 +41,7 @@ class Auth
         if(password_verify($password, $user->password))
         {
             $_SESSION['user'] = $user->id_user;
+            $_SESSION['name'] = $user->name;
             return true;
         }
 

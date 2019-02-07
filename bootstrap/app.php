@@ -17,11 +17,52 @@ require __DIR__ . '/../config/dependencies.php';
 $app->add(new \App\Middleware\ValidationErrorsMiddleware($container));
 //Persistencia datos formulario registro user cuando se refresca la pagina
 $app->add(new \App\Middleware\OldInputMiddleware($container));
-//Para obtener los valores del csrf de los formularios --> seccion de registro usuario
-//Así podemos inyectar los campos input type hidden necesarios usando una sentencia de twig; breve y limpio
-$app->add(new \App\Middleware\CsrfViewMiddleware($container));
-//Csrf desde middleware general
-$app->add($container->csrf);
+
+
+//--------------------------- PROTECCION CSRF ----------------------------
+//------------------------------------------------------------------------
+//Csrf desde middleware general --> para todas las rutas que se realicen al sistema
+//$app->add($container->csrf);
+
+//PERSONALIZAR LAS RUTAS WEB CON FORMULARIOS PARA QUE TENGAN PROTECCION CSRF EN VEZ DE PONERLO GLOBAL PARA TODAS LAS RUTAS
+//ASÍ NO AFECTARA A LAS RUTAS DE LA API
+
+//Añadir este middleware a aquellas rutas que necesiten validacion CSRF
+//->add($container->get('csrf'));
+
+
+//-------------------------- PROTECCION JWT -------------------------------
+//-------------------------------------------------------------------------
+
+
+
+$app->add(new \Tuupola\Middleware\JwtAuthentication([
+            "attribute" => $container->get('settings')['myrtkn']['attribute'],
+            "header" => $container->get('settings')['myrtkn']['header'],
+            "secret" => $container->get('settings')['myrtkn']['secret'],
+            "algorithm" => $container->get('settings')['myrtkn']['algorithm'],
+    "rules" => [
+        new \Tuupola\Middleware\JwtAuthentication\RequestPathRule([
+            "path" => $container->get('settings')['myrtkn']['validPath'],   //Path donde se aplicará la validacion JWT
+            "ignore" => [$container->get('settings')['myrtkn']['ignore']]   //Paths excluidos de la validacion JWT
+            
+        ]),
+        new \Tuupola\Middleware\JwtAuthentication\RequestMethodRule([
+            "ignore" => ["OPTIONS"]
+        ])
+    ],
+    "error" => function ($response, $arguments) {
+        $data["status"] = "error";
+        $data["message"] = $arguments["message"];
+        return $response
+            ->withHeader("Content-Type", "application/json")
+            ->write(json_encode($data, JSON_UNESCAPED_SLASHES));
+    }
+]));
+
+
+
+
 
 
 //---------------- VALIDACIONES PARA FORMULARIOS -------------------------

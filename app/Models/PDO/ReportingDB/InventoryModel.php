@@ -8,13 +8,22 @@ class InventoryModel
     protected $db;
 
 
+    /**
+     * Poner a disposición de la clase la instancia de conexión a la BD
+     *
+     * @param objeto $conn
+     */
     public function __construct($conn)
     {
         $this->db = $conn;
     }
 
     
-
+    /**
+     * Obtener los datos para el informe de Productos Inventario
+     *
+     * @return array
+     */
     public function productosInventario()
     {
         $sql = "SELECT i.cod_inventory, i.name_product, i.total_in, i.area ";

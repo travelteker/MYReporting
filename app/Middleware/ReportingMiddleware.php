@@ -14,12 +14,23 @@ class ReportingMiddleware extends Middleware
         //Formato de salida del fichero
         $formato = (isset($args['formato'])) ? strtolower($args['formato']) : null;
 
+        $method = $request->getMethod();
+
         //Si no se pasan los parametros de la ruta SLIM devolverá un error 404, por no coincidir con ninguna de las rutas declaradas en el sistema.
 
         if(!$this->formatosPermtidos($formato))
         {
-            $this->container->flash->addMessage('error', 'El formato solicitado no es un formato valido, contacte con soporte.');
-            return $response->withRedirect($this->container->router->pathFor('reports'));
+            if(strtoupper($method) == 'GET')
+            {
+                $this->container->flash->addMessage('error', 'El formato solicitado no es un formato valido, contacte con soporte.');
+                return $response->withRedirect($this->container->router->pathFor('reports'));
+            }
+            else
+            {
+                $data = ['status'=>'KO', 'description' => 'Error en la petición, por favor contacte con soporte@soporte.soporte', 'code' => 'A001x'];
+                return $response->withJson($data);
+            }
+            
         }
 
         $response = $next($request, $response);

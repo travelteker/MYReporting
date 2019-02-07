@@ -24,9 +24,6 @@ $container['writerXlsx'] = function ($c) {
 };
 
 
-
-
-
 // monolog
 $container['logger'] = function ($c) {
     $settings = $c->get('settings')['logger'];
@@ -48,16 +45,21 @@ $container['auth'] = function($c){
 };
 
 
+$container['myrtkn'] = function($c){
+    return $c->get('settings')['myrtkn'];
+};
+
+
+
 //Para utilizar motor de plantillas TWIG
 $container['view'] = function($c){
     $pathViews = __DIR__ . '/../views';
     $view = new \Slim\Views\Twig($pathViews, [
-        'cache' => false
+        'cache' => false    //o el path donde se van a cachear las vistas
     ]);
-    $view->addExtension(new \Slim\Views\TwigExtension(
-        $c->router,
-        $c->request->getUri()
-    ));
+    $view->addExtension(new \Slim\Views\TwigExtension($c->router, $c->request->getUri()));
+    //Añadimos nuestra propias extensiones TWIG para tenerlas disponibles en las vistas
+    $view->addExtension(new \App\ExtensionsViews\CsrfExtension($c['csrf']));
     
     //Disponer en las vistas de una variable global para identificar si el usuario está o no autenticado
     $view->getEnvironment()->addGlobal('auth', [
@@ -77,16 +79,38 @@ $container['validator'] = function($c){
     return new App\Validation\Validator;
 };
 
-//Para tener disponible CSRF en los middlewares
-$container['csrf'] = function($c){
-    return new \Slim\Csrf\Guard;
+$container['document'] = function($c){
+    return new App\Documents\Document;
 };
+
+
+//Para tener disponible CSRF en los middlewares
+//Personalizar parámetro y valor en caso de falle el CSRF, este valor estará disponible en la REQUEST para los middleware
+$container['csrf'] = function($c){
+    $guard = new \Slim\Csrf\Guard();
+    $guard->setPersistentTokenMode(false);
+    $guard->setFailureCallable(function ($request, $response, $next) {
+        $request = $request->withAttribute("csrf_status", false);
+        return $next($request, $response);
+    });
+    return $guard;
+};
+
 
 //Custom not found handler
 //Override the default Not Found Handler before creating App
 $container['notFoundHandler'] = function ($c) {
     return function ($request, $response) use ($c) {
-        return $c->view->render($response, 'errors/404.twig')->withStatus(404);
+        $method = $request->getMethod();
+        if(strtoupper($method) == 'GET')
+        {
+            $output = $c->view->render($response, 'errors/404.twig')->withStatus(404);
+        }
+        else
+        {
+            $output = $response->withJson(array('status' => 'KO', 'description' => 'Petición no válida, por favor contacte con soporte@soporte.com'));
+        }
+        return $output;
     };
 };
 
@@ -109,6 +133,10 @@ $container['AuthController'] = function($c){
 
 $container['PasswordController'] = function($c){
     return new \App\Controllers\Auth\PasswordController($c);
+};
+
+$container['ApiController'] = function($c){
+    return new \App\Controllers\ApiController($c);
 };
 
 

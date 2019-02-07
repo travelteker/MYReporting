@@ -19,7 +19,16 @@ class ReportsController extends Controller
 
     const SAVE_IN_SERVER = false;   //Si queremos guardar los ficheros en el directorio 'Downloads'
     
+    protected $extFile = null;  //Para identificar cabecera ContentType de la respuesta en función del tipo fichero a descargar
+    protected $pathFile;        //Path nombre fichero que queremos descargar, contiene el nombre personalizado
 
+    /**
+     * Método para renderizar pagina html
+     *
+     * @param objeto $request
+     * @param objeto $response
+     * @return string
+     */
     public function index($request, $response)
     {
         $id_user = $this->auth->user()->id_user;
@@ -47,9 +56,17 @@ class ReportsController extends Controller
      */
     public function prepareFile($request, $response, $args)
     {
+        $isApi = Aux::isRequestApi($request);
+        
+        if($isApi === true)
+        {
+            //Obtener el TOKEN JsonWebToken (JWT) y validarlo
+            $jwt = Aux::getTokenRequest();
+        }
+
         $metodo = $args['metodo'];
         $formato = $args['formato'];
-
+    
         //Con 'ReportingMiddleware.php' nos aseguramos que el formato que llega es el correcto. Sino se manda flash-message avisando del error.
 
         //Convención:
@@ -57,7 +74,7 @@ class ReportsController extends Controller
         $metodo = Aux::parsingMethodName($metodo);
         $extFile = Aux::mappingExtensionsFile($formato);
 
-        //Invocar los metodos de forma dinamica --> array_call_function PHP
+        $this->extFile = $extFile;
 
         //Para tener disponibles los parametros $request, $response y $args en cada metodo que invoquemos dinamicamente
         //Devuelve el valor devuelto por la llamada de retorno o FALSE en caso de ERROR
@@ -65,10 +82,12 @@ class ReportsController extends Controller
         if(method_exists($this, $metodo))
         {
             $params = ['formato' => $formato, 'extension' => $extFile];
-            $pathAbsoluteFile = call_user_func_array(array($this, $metodo), array($params));
-            $nameFile = Aux::showNameInDownload($pathAbsoluteFile);
-            $this->modo($pathAbsoluteFile); 
-            return $this->download($response, $nameFile);
+            call_user_func_array(array($this, $metodo), array($params));
+            $pathAbsoluteFile = $this->getPathFile();
+            $nameFile = Aux::showNameInDownload($pathAbsoluteFile); 
+            //$this->document -----> se obtiene del DI del Slim3 ------> ver fichero 'dependencias.php'
+            $this->document->saveFile($pathAbsoluteFile, $this->writerXlsx, self::SAVE_IN_SERVER);
+            return $this->document->download($response, $nameFile);
         }
         else
         {
@@ -81,22 +100,39 @@ class ReportsController extends Controller
 
 
     /**
+     * Obtener el path abosulto del fichero que queremos descargar, en la ubicación pre-configurada
+     *
+     * @return string
+     */
+    private function getPathFile()
+    {
+        return $this->pathFile;
+    }
+
+
+    /**
      *Método para obtener los datos y volcarlos al tipo de informe solicitado
      *
-     * @param [type] $params
+     * @param array $params
      * @return string
      */
     private function inventarioProductos($params)
     {
         $ext = $params['extension'];
-        $pathExcelFileName = $this->configureAbsolutePathFile(__FUNCTION__, $ext);
+        $this->pathFile = Aux::PathDownloadFiles(__FUNCTION__, $ext);
 
         //Las clases fueron configuradas para estar disponibles desde el contenedor de dependencias de slim.
         //Creamos un nuevo libro excel --> 'hoja de cálculo = spreadsheet'
         $spreadsheet = $this->spreadsheet;
 
         //Configurar los metadatos para el fichero excel
-        $this->configureMetaData($spreadsheet, __FUNCTION__);
+        //$this->configureMetaData($spreadsheet, __FUNCTION__);
+        $owner = null;
+        if(isset($_SESSION['name']))
+        {
+            $owner = $_SESSION['name'];
+        }
+        $this->document->configMetaDataDocument($spreadsheet, __FUNCTION__, ['owner' => $owner]);
 
         // Configurar hoja como activa, por defecto la primera hoja es con indice 0.
         $sheet = $spreadsheet->getActiveSheet();
@@ -104,7 +140,7 @@ class ReportsController extends Controller
         $sheet->setTitle(__FUNCTION__);
 
         //Estilo cabecera
-        $spreadsheet->getActiveSheet()->getStyle('A4:C4')->applyFromArray($this->styleHeader());
+        $spreadsheet->getActiveSheet()->getStyle('A4:C4')->applyFromArray($this->document->styleHeader());
 
         //Cabecera Report
         $cabecera = [
@@ -124,13 +160,13 @@ class ReportsController extends Controller
             $sheet->getColumnDimension($i)->setAutosize(true);
         }
 
-        //Obtener los datos mediante consulta a la BD
+        //Obtener los datos mediante consulta a la BD a través del Modelo inyectado por DI
         $listadoDatos = $this->Inventory->productosInventario();
 
                                 //array datos a insertar, rellenar con valor NULL, coordenada comienzo
         $sheet->fromArray($this->arrayFilasExcel($listadoDatos), NULL, 'A5');
 
-        return $pathExcelFileName;
+        
 
     }
 
@@ -138,7 +174,8 @@ class ReportsController extends Controller
     /**
      * Preparar las filas a escribir en el Excel en función de la cabecera necesaria.
      *
-     * @return void
+     * @param array $listadoDatos
+     * @return array
      */
     private function arrayFilasExcel($listadoDatos)
     {
@@ -155,120 +192,5 @@ class ReportsController extends Controller
         }
         return $filasExcel;
     }
-
-
-    /**
-     * Configuracion estilo para la cabecera del report
-     *
-     * @return void
-     */
-    private function styleHeader()
-    {
-       return [
-            'font' => [
-                'bold' => true,
-                'size' => 15
-            ],
-            'alignment' => [
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-            ],
-            'borders' => [
-                'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ],
-            ],
-            'fill' => [
-                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                'rotation' => 90,
-                'startColor' => [
-                    'argb' => 'FFA0A0A0',
-                ],
-                'endColor' => [
-                    'argb' => 'FFFFFFFF',
-                ],
-            ],
-        ];
-    }
-
-
-    /**
-     * Configurar el path absoluto donde se va a guardar el fichero que generamos para descarga
-     *
-     * @param string $nameMethod
-     * @param string $ext
-     * @return string
-     */
-    private function configureAbsolutePathFile($nameMethod, $ext)
-    {
-        $rootFile = __DIR__ . DS . '..' . DS . '..' . DIRECTORY_SEPARATOR . DIR_EXCELS . DS;
-        $nameFile = date('Ymd').'_'.$nameMethod.$ext;
-        return $rootFile.$nameFile;
-    }
-
-
-    /**
-     * Configurar los metadatos del fichero excel
-     *
-     * @param objeto $spreadsheet
-     * @param string $metodo
-     * @return void
-     */
-    private function configureMetaData($spreadsheet, $metodo)
-    {
-        $spreadsheet->getProperties()
-                    ->setCreator("MYReporting")
-                    ->setLastModifiedBy("MYReporting")
-                    ->setTitle("Office XLSX")
-                    ->setSubject("Office XLSX")
-                    ->setDescription($metodo)
-                    ->setKeywords("excel slim php")
-                    ->setCategory("Informe resultados");
-    }
-
-
-    /**
-     * Metodo para devolver las cabeceras de la respuesta de la petición realizada
-     *
-     * @param objeto $response
-     * @param string $nameFile
-     * @return void
-     */
-    private function download($response, $nameFile)
-    {
-        return $response->withHeader('Content-Description', 'File Transfer')
-                        ->withHeader('Content-Type', 'application/octet-stream')
-                        ->withHeader('Content-Disposition', 'attachment; filename="' .$nameFile. '"')
-                        ->withHeader('Expires', 'Fri, 11 Nov 2011 11:11:11 GMT')                                  //Never cache
-                        ->withHeader('Cache-Control', 'max-age=0, private, no-store, no-cache, must-revalidate')  //Never cache
-                        ->withHeader('Pragma', 'public');
-    }
-
-
-    /**
-     * Método para especificar el tipo de guardado del fichero generado
-     *
-     * @param string $pathAbsoluteFile
-     * @return void
-     */
-    private function modo($pathAbsoluteFile)
-    {
-        //Salida de los datos
-        $excelWriter = $this->writerXlsx;
-        if(self::SAVE_IN_SERVER === false)
-        {
-            //Forzar la descargar desde el buffer de salida sin guardar en el servidor
-            $excelWriter->save('php://output');
-        }
-        else
-        {
-            //Guardar el fichero correspondiente en el PATH especificado
-            $excelWriter->save($pathAbsoluteFile);
-            //Leer fichero y escribirlo al búfer de salida.
-            readfile($pathAbsoluteFile);
-        }
-    }
-
-
 
 }
